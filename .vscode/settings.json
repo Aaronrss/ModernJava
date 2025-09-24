@@ -1,0 +1,12 @@
+{
+  // Haz que Gradle/JDT de VS Code usen JDK 17 para este proyecto
+  "java.import.gradle.wrapper.enabled": true,
+  "java.import.gradle.java.home": "/home/rosas/.sdkman/candidates/java/17.0.16-tem",
+  "gradle.java.home": "/home/rosas/.sdkman/candidates/java/17.0.16-tem",
+
+  // (opcional) declara runtimes para el editor
+  "java.configuration.runtimes": [
+    { "name": "JavaSE-21", "path": "/home/rosas/.sdkman/candidates/java/current" },
+    { "name": "JavaSE-17", "path": "/home/rosas/.sdkman/candidates/java/17.0.16-tem", "default": true }
+  ]
+}
