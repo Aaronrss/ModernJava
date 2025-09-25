@@ -1,0 +1,29 @@
+plugins {
+  id 'java' // opcional en el root; la magia va en subprojects{}
+}
+
+subprojects {
+  apply plugin: 'java'
+
+  repositories { mavenCentral() }
+
+  // Toolchain global: Java 21 para todo el build
+  java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+  }
+
+  // Cosas comunes
+  tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+  }
+  test {
+    useJUnitPlatform()
+  }
+
+  // Si algún subproyecto aplica 'application', activa asserts por defecto
+  pluginManager.withPlugin('application') {
+    application {
+      applicationDefaultJvmArgs = ['-ea']
+    }
+  }
+}

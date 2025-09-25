@@ -1,0 +1,17 @@
+rootProject.name = 'ModernJava'
+
+// Incluye automáticamente subproyectos bajo estas carpetas:
+def roots = ['CS','FP','OO']
+
+roots.each { grp ->
+  def base = file(grp)
+  if (base.exists()) {
+    base.eachDir { d ->
+      // Detecta módulos si tienen build.gradle o build.gradle.kts
+      if (new File(d, 'build.gradle').exists() || new File(d, 'build.gradle.kts').exists()) {
+        include "${grp}:${d.name}"
+        project(":${grp}:${d.name}").projectDir = d
+      }
+    }
+  }
+}

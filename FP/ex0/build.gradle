@@ -1,17 +1,29 @@
-apply plugin: 'java'
-
-// Ejecuta una clase main sin tocar el resto del build
-tasks.register('run', JavaExec) {
-    group = 'application'
-    description = 'Run the main class'
-    classpath = sourceSets.main.runtimeClasspath
-
-    // 👈 FQN correcto
-    mainClass.set('ex0.Ex0')
-
-    // (opcional) args: ./gradlew run -Pargs="foo bar"
-    if (project.hasProperty('args')) {
-        args project.args.toString().split('\\s+')
-    }
-    // (opcional) JVM args: jvmArgs '-Xms256m', '-Xmx1g'
+plugins {
+  id 'java'
+  id 'application'      // agrega el task 'run'
 }
+
+// Toolchain unificada (ajusta la versión si quieres 21)
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+application {
+  mainClass = 'ex0.Ex0' // <- tu FQCN real
+  applicationDefaultJvmArgs = ['-ea']  // opcional (activa asserts)
+}
+
+
+/**
+ * Permite pasar argumentos como antes:
+ *   ./gradlew :FP:ex0:run -Pargs="foo bar" -PjvmArgs="-Xms256m -Xmx1g"
+ */
+tasks.named('run', JavaExec).configure {
+  if (project.hasProperty('args')) {
+    args project.property('args').toString().split(/\s+/)
+  }
+  if (project.hasProperty('jvmArgs')) {
+    jvmArgs project.property('jvmArgs').toString().split(/\s+/)
+  }
+}
+

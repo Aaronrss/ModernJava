@@ -1,0 +1,27 @@
+{
+  "folders": [{ "path": "." }],
+  "settings": {
+    // Gradle usa JDK 21
+    "java.import.gradle.enabled": true,
+    "java.import.gradle.wrapper.enabled": true,
+    "java.import.gradle.offline.enabled": false,
+    "java.import.gradle.java.home": "/home/rosas/.sdkman/candidates/java/21.0.8-tem",
+    "gradle.java.home": "/home/rosas/.sdkman/candidates/java/21.0.8-tem",
+
+    // Runtimes del IDE (DEFAULT = 21)
+    "java.configuration.runtimes": [
+      { "name": "JavaSE-21", "path": "/home/rosas/.sdkman/candidates/java/21.0.8-tem", "default": true },
+      { "name": "JavaSE-17", "path": "/home/rosas/.sdkman/candidates/java/17.0.16-tem" }
+    ],
+
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.debug.settings.vmArgs": "-ea",
+
+    "files.exclude": { "**/.gradle": true, "**/build": true },
+    "search.exclude": { "**/.gradle": true, "**/build": true },
+
+    "editor.multiCursorModifier": "alt",
+    "editor.definitionLinkOpensInPeek": false,
+    "editor.gotoLocation.multipleDefinitions": "peek"
+  }
+}

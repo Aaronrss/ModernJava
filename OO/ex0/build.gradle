@@ -1,12 +1,32 @@
-group 'livelessons'
-version '1.0-SNAPSHOT'
+plugins {
+  id 'java'
+  id 'application'      // agrega el task 'run'
+}
 
-apply plugin: 'java'
+group = 'livelessons'
+version = '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
+
+// Toolchain unificada (ajusta la versión si quieres 21)
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+application {
+  mainClass = 'ex00.Ex00' // <- tu FQCN real
+  applicationDefaultJvmArgs = ['-ea']  // opcional (activa asserts)
 }
 
 dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
+}
+
+// Permite pasar argumentos como antes (En este caso, no es necesario porqué las clases imprimen directamente):
+tasks.named('run', JavaExec).configure {
+  if (project.hasProperty('args')) {
+    args project.property('args').toString().split(/\s+/)
+  }
+  if (project.hasProperty('jvmArgs')) {
+    jvmArgs project.property('jvmArgs').toString().split(/\s+/)
+  }
 }

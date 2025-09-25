@@ -1,5 +1,5 @@
-group 'livelessons'
-version '1.0-SNAPSHOT'
+group = 'livelessons'
+version = '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
