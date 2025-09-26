@@ -1,10 +1,14 @@
+plugins {
+    id 'java'
+    id 'application'      // agrega el task 'run'
+}
+
 group = 'livelessons'
 version = '1.0-SNAPSHOT'
 
-apply plugin: 'java'
-
-repositories {
-    mavenCentral()
+application {
+    mainClass = 'ImageCounter' // <- tu FQCN real
+    applicationDefaultJvmArgs = ['-ea']  // opcional (activa asserts)
 }
 
 dependencies {
@@ -12,4 +16,15 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.11.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+}
+
+// Permite pasar argumentos con -Pargs="arg1 arg2 arg3"
+// y argumentos de JVM con -PjvmArgs="arg1 arg2 arg3":
+tasks.named('run', JavaExec).configure {
+  if (project.hasProperty('args')) {
+    args project.property('args').toString().split(/\s+/)
+  }
+  if (project.hasProperty('jvmArgs')) {
+    jvmArgs project.property('jvmArgs').toString().split(/\s+/)
+  }
 }

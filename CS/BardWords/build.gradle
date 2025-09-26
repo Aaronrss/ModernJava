@@ -1,9 +1,23 @@
+plugins {
+    id 'java'
+    id 'application'      // agrega el task 'run'
+
+}
+
 group = 'livelessons'
 version = '1.0-SNAPSHOT'
 
-apply plugin: 'java'
-
-repositories {
-    mavenCentral()
+application {
+    mainClass = 'BardWords'
+    applicationDefaultJvmArgs = ['-ea']  // opcional (activa asserts)
 }
 
+// Permite pasar argumentos como antes (En este caso, no es necesario porqué las clases imprimen directamente):
+tasks.named('run', JavaExec).configure {
+  if (project.hasProperty('args')) {
+    args project.property('args').toString().split(/\s+/)
+  }
+  if (project.hasProperty('jvmArgs')) {
+    jvmArgs project.property('jvmArgs').toString().split(/\s+/)
+  }
+}
