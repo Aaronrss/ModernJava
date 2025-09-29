@@ -1,6 +1,8 @@
 package vandy.mooc.functional;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -71,6 +73,7 @@ public class Array<E>
         } else {
             mElementData = new Object[initialCapacity];
         }
+        mSize = 0;
     }
 
     /**
@@ -92,6 +95,7 @@ public class Array<E>
         if (n == 0){
             mElementData = EMPTY_ELEMENTDATA;
             mSize = 0;
+            return;
         }
         mElementData = c.toArray();
         mSize = mElementData.length;
@@ -155,7 +159,14 @@ public class Array<E>
         // proper code).  Try to avoid using Java loops, but use
         // System.arraycopy() instead and also call
         // ensureCapacityInternal() to simplify this code.
-        return false;
+        if (c == null) throw new NullPointerException("collection must not be null");
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        ensureCapacityInternal(mSize + numNew);
+        if (numNew == 0) return false;
+        System.arraycopy(a, 0, mElementData, mSize, numNew);
+        mSize += numNew;
+        return true;
     }
 
     /**
@@ -180,7 +191,14 @@ public class Array<E>
         // proper code).  Try to avoid using Java loops, but use
         // System.arraycopy() instead and also call
         // ensureCapacityInternal() to simplify this code.
-        return false;
+        if (array == null) throw new NullPointerException("array must not be null");
+        Object[] a = array.toArray();
+        int numNew = a.length;
+        ensureCapacityInternal(mSize + numNew);
+        if (numNew == 0) return false;
+        System.arraycopy(a, 0, mElementData, mSize, numNew);
+        mSize += numNew;
+        return true;
     }
 
     /**
@@ -196,7 +214,14 @@ public class Array<E>
         // code).  Try to avoid using Java loops, but use
         // System.arraycopy() instead and also call rangeCheck() to
         // simplify this code.
-        return null;
+        rangeCheck(index);
+        E old = (E) mElementData[index];
+        int numMoved = mSize - index - 1;
+        if (numMoved > 0){
+            System.arraycopy(mElementData, index + 1, mElementData, index, numMoved);
+        }
+        mElementData[--mSize] = null;
+        return old;
     }
 
     /**
@@ -214,7 +239,8 @@ public class Array<E>
      */
     public void rangeCheck(int index) throws IndexOutOfBoundsException {
         // TODO -- you fill in here.
-        
+        if (index < 0 || index >= mSize) throw new IndexOutOfBoundsException(
+                "Index: " + index + ", Size: " + mSize);
     }
 
     /**
@@ -229,7 +255,8 @@ public class Array<E>
     public E get(int index) {
         // TODO -- you fill in here (replace 'return null' with proper
         // code).  Make sure to use the rangeCheck() method here.
-        return null;
+        rangeCheck(index);
+        return (E) mElementData[index];
     }
 
     /**
@@ -245,7 +272,10 @@ public class Array<E>
     public E set(int index, E element) {
         // TODO -- you fill in here (replace 'return null' with proper
         // code).
-        return null;
+        rangeCheck(index);
+        E old = (E) mElementData[index];
+        mElementData[index] = element;
+        return old;
     }
 
     /**
@@ -258,7 +288,9 @@ public class Array<E>
         // TODO -- you fill in here (replace 'return false' with
         // proper code).  Call ensureCapacityInternal() to simplify
         // this code.
-        return false;
+        ensureCapacityInternal( mSize + 1);
+        mElementData[mSize++] = element;
+        return true;
     }
 
     /**
@@ -275,7 +307,17 @@ public class Array<E>
     protected void ensureCapacityInternal(int minCapacity) {
         // TODO -- you fill in here.  Try to avoid using Java loops,
         // but use System.arraycopy() or Arrays.copyOf() instead.
-        
+        if (mElementData == EMPTY_ELEMENTDATA) {
+            int newCap = Math.max(DEFAULT_CAPACITY, minCapacity);
+            mElementData = Arrays.copyOf(EMPTY_ELEMENTDATA, newCap);
+            return;
+        }
+        int oldCap = mElementData.length;
+        if (minCapacity > oldCap){
+            int newCap = oldCap + (oldCap >> 1);
+            if (newCap < minCapacity) newCap = minCapacity;
+            mElementData = Arrays.copyOf(mElementData, newCap);
+        }
     }
 
     /**
@@ -285,7 +327,7 @@ public class Array<E>
     public Iterator<E> iterator() {
         // TODO -- you fill in here replacing this statement with your
         // solution.
-        return null;
+        return new ArrayIterator();
     }
 
     /**
@@ -298,13 +340,14 @@ public class Array<E>
          * Current position in the {@link Array} (defaults to 0).
          */
         // TODO - you fill in here.
+        int currPos = 0;
         
 
         /**
          * Index of last element returned; -1 if no such element.
          */
         // TODO - you fill in here.
-        
+        int lastRet = -1;
 
         /**
          * @return True if the iteration has more elements that
@@ -314,7 +357,7 @@ public class Array<E>
         public boolean hasNext() {
             // TODO - you fill in here (replace 'return false' with
             // proper code).
-            return false;
+            return currPos < mSize;
         }
 
         /**
@@ -326,7 +369,9 @@ public class Array<E>
         public E next() {
             // TODO - you fill in here (replace 'return null' with
             // proper code).
-            return null;
+            if (currPos >= mSize) throw new NoSuchElementException();
+            lastRet = currPos;
+            return (E) mElementData[currPos++];
         }
 
         /**
@@ -340,6 +385,10 @@ public class Array<E>
         @Override
         public void remove() {
             // TODO - you fill in here
+            if (lastRet < 0) throw new IllegalStateException();
+            Array.this.remove(lastRet);
+            currPos = lastRet;
+            lastRet = -1;
             
         }
     }
@@ -362,7 +411,12 @@ public class Array<E>
     public void replaceAll(UnaryOperator<E> operator) {
         // TODO - you fill in here (this implementation can use a Java
         //  index-based for loop).
-        
+        Objects.requireNonNull(operator);
+        for (int i = 0; i < mSize; i++) {
+            E oldVal = (E) mElementData[i];
+            E newVal = operator.apply(oldVal);
+            mElementData[i] = newVal;
+        }
     }
 
     /**
@@ -380,7 +434,10 @@ public class Array<E>
     public void forEach(Consumer<? super E> action) {
         // TODO - You fill in here using a for-each loop or
         // the Iterator.forEachRemaining() method.
-        
+        Objects.requireNonNull(action);
+        for (int i = 0; i < mSize; i++) {
+            action.accept((E) mElementData[i]);
+        }
     }
 
     /**
@@ -391,7 +448,9 @@ public class Array<E>
         // with a solution using a for-each loop or (better
         // yet) the Iterator.forEachRemaining() method and
         // a method reference.
-        return null;
+        List<E> list = new ArrayList<>(mSize);
+        iterator().forEachRemaining(list::add);
+        return list;
     }
 
     /*
