@@ -97,8 +97,8 @@ public class Array<E>
             mSize = 0;
             return;
         }
-        mElementData = c.toArray();
-        mSize = mElementData.length;
+        mElementData = c.toArray(new Object[n]);
+        mSize = n;
     }
 
     /**
@@ -107,7 +107,7 @@ public class Array<E>
     public boolean isEmpty() {
         // TODO -- you fill in here (replace 'return false' with
         // proper code).
-        return mSize == 0;
+        return size() == 0;
     }
 
     /**
@@ -192,11 +192,11 @@ public class Array<E>
         // System.arraycopy() instead and also call
         // ensureCapacityInternal() to simplify this code.
         if (array == null) throw new NullPointerException("array must not be null");
-        Object[] a = array.toArray();
-        int numNew = a.length;
+        Object[] src = array.uncheckedToArray();
+        int numNew = array.size();
         ensureCapacityInternal(mSize + numNew);
         if (numNew == 0) return false;
-        System.arraycopy(a, 0, mElementData, mSize, numNew);
+        System.arraycopy(src, 0, mElementData, mSize, numNew);
         mSize += numNew;
         return true;
     }
@@ -214,8 +214,7 @@ public class Array<E>
         // code).  Try to avoid using Java loops, but use
         // System.arraycopy() instead and also call rangeCheck() to
         // simplify this code.
-        rangeCheck(index);
-        E old = (E) mElementData[index];
+        E old = get(index);
         int numMoved = mSize - index - 1;
         if (numMoved > 0){
             System.arraycopy(mElementData, index + 1, mElementData, index, numMoved);
@@ -272,8 +271,7 @@ public class Array<E>
     public E set(int index, E element) {
         // TODO -- you fill in here (replace 'return null' with proper
         // code).
-        rangeCheck(index);
-        E old = (E) mElementData[index];
+        E old = get(index);
         mElementData[index] = element;
         return old;
     }
@@ -308,8 +306,7 @@ public class Array<E>
         // TODO -- you fill in here.  Try to avoid using Java loops,
         // but use System.arraycopy() or Arrays.copyOf() instead.
         if (mElementData == EMPTY_ELEMENTDATA) {
-            int newCap = Math.max(DEFAULT_CAPACITY, minCapacity);
-            mElementData = Arrays.copyOf(EMPTY_ELEMENTDATA, newCap);
+            mElementData = new Object[Math.max(DEFAULT_CAPACITY, minCapacity)];
             return;
         }
         int oldCap = mElementData.length;
@@ -435,9 +432,7 @@ public class Array<E>
         // TODO - You fill in here using a for-each loop or
         // the Iterator.forEachRemaining() method.
         Objects.requireNonNull(action);
-        for (int i = 0; i < mSize; i++) {
-            action.accept((E) mElementData[i]);
-        }
+        iterator().forEachRemaining(action);
     }
 
     /**
